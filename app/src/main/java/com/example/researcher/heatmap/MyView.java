@@ -172,7 +172,7 @@ public class MyView extends View {
             case MotionEvent.ACTION_UP:
                 //Check if the point press is within the circle
                 if(contains(event, points.get(pointsPos))){
-
+//                    counter = 0;          put somewhere else
                     Random r = new Random(System.nanoTime());
                     pointsPos = r.nextInt(points.size()); //between 0 and points.length
                     stringBuilder = new StringBuilder();
