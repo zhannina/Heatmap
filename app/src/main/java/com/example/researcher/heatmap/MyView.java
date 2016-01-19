@@ -42,10 +42,12 @@ public class MyView extends View {
     SharedPreferences prefs;
     String participantCode, sessionCode, groupCode, conditionCode;
 
+    String hitCircle;
+
     int counter = 0;
     File file;
     BufferedWriter bufferedWriter;
-    StringBuilder stringBuilder;
+    StringBuilder stringBuilder = new StringBuilder();
     final String HEADER = "TimeStamp,Date,Participant,Session,Group,Condition,"
             + "Time(ms),GridTilePosition,StartViewTouchX,StartViewTouchY,IconCenterX,IconCenterY,TouchX,TouchY,WrongHit\n";
 
@@ -100,10 +102,6 @@ public class MyView extends View {
         positions.clear();
         drawbigcircles = false;
 
-        Random r1 = new Random(System.nanoTime());
-        pointsPos = r1.nextInt(points.size()); //between 0 and points.length
-        positions.add(pointsPos);
-
         participantCode = prefs.getString("participantCode", "");
         sessionCode = prefs.getString("sessionCode", "");
         groupCode = prefs.getString("groupCode", "");
@@ -124,7 +122,6 @@ public class MyView extends View {
         file = new File(dataDirectory, base + ".csv");
 
         try {
-
             bufferedWriter = new BufferedWriter(new FileWriter(file, true));
             if (!prefs.getBoolean("HEADERS", false)) {
                 bufferedWriter.append(HEADER, 0, HEADER.length());
@@ -164,23 +161,38 @@ public class MyView extends View {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         float touchX, touchY;
+        touchX = event.getX();
+        touchY = event.getY();
 
         switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-            case MotionEvent.ACTION_MOVE:
+//            case MotionEvent.ACTION_UP:
 
-            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_DOWN:
                 //Check if the point press is within the circle
                 if(contains(event, points.get(pointsPos))){
-//                    counter = 0;          put somewhere else
-                    Random r = new Random(System.nanoTime());
-                    pointsPos = r.nextInt(points.size()); //between 0 and points.length
-                    stringBuilder = new StringBuilder();
+                    hitCircle = "inside";
                     Long tsLong = System.currentTimeMillis() / 1000;
                     String ts = tsLong.toString();
                     String date = DateFormat.getDateTimeInstance().format(new Date());
+
                     endTime = System.currentTimeMillis();
+
+                    Log.d("hur grid location ", "" + pointsPos);
+                    Log.d("hur hashSet ", "" + positions);
+                    Log.d("hur hashsize ", "" + positions.size());
+
                     diff = endTime - startTime;
+
+                    stringBuilder.append(String.format("%s,%s,%s,%s,%s,%s,%s,%d,%f,%f,%d,%d,%f,%f,%s\n", ts, date, participantCode,
+                            sessionCode, groupCode, conditionCode, diff.toString(), pointsPos,
+                            x, y, points.get(pointsPos).x, (points.get(pointsPos).y), touchX, touchY, hitCircle));
+                    try {
+                        bufferedWriter.write(stringBuilder.toString(), 0, stringBuilder.length());
+                        bufferedWriter.flush();
+                    } catch (IOException e) {
+                        Log.e("MYDEBUG", "ERROR WRITING TO DATA FILES: e = " + e);
+                    }
+                    stringBuilder.delete(0, stringBuilder.length());
 
                     if (positions.size() == points.size()) {
                         // start another view with bigger circles
@@ -197,35 +209,43 @@ public class MyView extends View {
                             System.exit(0);
                         }
                     }
-                    else{
+                    else {
+                        Random r = new Random(System.nanoTime());
+                        pointsPos = r.nextInt(points.size()); //between 0 and points.length
                         positions.add(pointsPos);
                         postInvalidate();
-                        Log.d("hur point ", "" + pointsPos);
-                        Log.d("hur hashSet ", "" + positions);
-                        Log.d("hur hashsize ", "" + positions.size());
-                        touchX = event.getX();
-                        touchY = event.getY();
-
-                        //should endtime be here???
-                        stringBuilder.append(String.format("%s,%s,%s,%s,%s,%s,%s,%d,%f,%f,%d,%d,%f,%f,%d\n", ts, date, participantCode,
-                                sessionCode, groupCode, conditionCode, diff.toString(), pointsPos,
-                                x, y, points.get(pointsPos).x, (points.get(pointsPos).y), touchX, touchY, counter));
-                        try {
-                            bufferedWriter.write(stringBuilder.toString(), 0, stringBuilder.length());
-                            bufferedWriter.flush();
-                        } catch (IOException e) {
-                            Log.e("MYDEBUG", "ERROR WRITING TO DATA FILES: e = " + e);
-                        }
-                        stringBuilder.delete(0, stringBuilder.length());
-
                     }
                 } else {
-                    counter++;
+                    hitCircle = "outside";
+                    Long tsLong = System.currentTimeMillis() / 1000;
+                    String ts = tsLong.toString();
+                    String date = DateFormat.getDateTimeInstance().format(new Date());
+
+                    endTime = System.currentTimeMillis();
+
+                    Log.d("hur grid location ", "" + pointsPos);
+                    Log.d("hur hashSet ", "" + positions);
+                    Log.d("hur hashsize ", "" + positions.size());
+
+                    diff = endTime - startTime;
+
+                    stringBuilder.append(String.format("%s,%s,%s,%s,%s,%s,%s,%d,%f,%f,%d,%d,%f,%f,%s\n", ts, date, participantCode,
+                            sessionCode, groupCode, conditionCode, diff.toString(), pointsPos,
+                            x, y, points.get(pointsPos).x, (points.get(pointsPos).y), touchX, touchY, hitCircle));
+                    try {
+                        bufferedWriter.write(stringBuilder.toString(), 0, stringBuilder.length());
+                        bufferedWriter.flush();
+                    } catch (IOException e) {
+                        Log.e("MYDEBUG", "ERROR WRITING TO DATA FILES: e = " + e);
+                    }
+                    stringBuilder.delete(0, stringBuilder.length());
                 }
 
-            case MotionEvent.ACTION_CANCEL: {
-                break;
-            }
+//            case MotionEvent.ACTION_CANCEL: {
+//                break;
+//            }
+//
+//            case MotionEvent.ACTION_MOVE:
         }
         postInvalidate();
         return true;
@@ -244,14 +264,15 @@ public class MyView extends View {
     }
 
     public void populateSmallCirclesArrayList(){
+
         width = prefs.getFloat("maxX", 0);
         height = prefs.getFloat("maxY", 0);
         radius = width/8;
         Log.d("screen",prefs.getFloat("maxX", 0)+"");
         Log.d("screen", "x: " + width + " y: " + height);
         points.clear();
-        points.add(new Point((int) (width/8), (int) (height/12)));
-        points.add(new Point((int) (3*width/8), (int) (height/12)));
+        points.add(new Point((int) (width / 8), (int) (height / 12)));
+        points.add(new Point((int) (3 * width / 8), (int) (height / 12)));
         points.add(new Point((int) (5 * width/8), (int) (height/12)));
         points.add(new Point((int) (7 * width / 8), (int) (height / 12)));
 
@@ -280,9 +301,14 @@ public class MyView extends View {
         points.add(new Point((int) (5 * width/8), (int) (11*height/12)));
         points.add(new Point((int) (7*width/8), (int) (11*height/12)));
 
+        Random r1 = new Random(System.nanoTime());
+        pointsPos = r1.nextInt(points.size()); //between 0 and points.length
+        positions.add(pointsPos);
+
     }
 
     public void populateBigCirclesArrayList(){
+
         width = prefs.getFloat("maxX", 0);
         height = prefs.getFloat("maxY", 0);
         radius = width/4;
@@ -309,6 +335,10 @@ public class MyView extends View {
         points.add(new Point((int) (width / 4), (int) (5*height / 6)));
         points.add(new Point((int) (2 * width / 4), (int) (5*height / 6)));
         points.add(new Point((int) (3 * width / 4), (int) (5*height / 6)));
+
+        Random r1 = new Random(System.nanoTime());
+        pointsPos = r1.nextInt(points.size()); //between 0 and points.length
+        positions.add(pointsPos);
 
     }
 
