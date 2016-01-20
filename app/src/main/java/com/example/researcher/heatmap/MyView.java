@@ -104,8 +104,6 @@ public class MyView extends View {
         groupCode = prefs.getString("groupCode", "");
         conditionCode = prefs.getString("conditionCode", "");
 
-        Log.d("SharedPrefs", participantCode + " " + sessionCode + " " + groupCode + " " + conditionCode);
-
         File dataDirectory = new File(Environment.getExternalStorageDirectory() +
                 WORKING_DIRECTORY);
         if (!dataDirectory.exists() && !dataDirectory.mkdirs()) {
@@ -174,10 +172,6 @@ public class MyView extends View {
 
                     endTime = System.currentTimeMillis();
 
-                    Log.d("hur grid location ", "" + pointsPos);
-                    Log.d("hur hashSet ", "" + positions);
-                    Log.d("hur hashsize ", "" + positions.size());
-
                     diff = endTime - startTime;
 
                     stringBuilder.append(String.format("%s,%s,%s,%s,%s,%s,%s,%d,%f,%f,%d,%d,%f,%f,%s\n", ts, date, participantCode,
@@ -219,10 +213,6 @@ public class MyView extends View {
                     String date = DateFormat.getDateTimeInstance().format(new Date());
 
                     endTime = System.currentTimeMillis();
-
-                    Log.d("hur grid location ", "" + pointsPos);
-                    Log.d("hur hashSet ", "" + positions);
-                    Log.d("hur hashsize ", "" + positions.size());
 
                     diff = endTime - startTime;
 
