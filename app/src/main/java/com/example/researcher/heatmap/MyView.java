@@ -60,7 +60,6 @@ public class MyView extends View {
 
     public MyView(Context context) {
         super(context);
-        Log.d("check1", "5");
         x = this.getX();
         y = this.getY();
         prefs = context.getSharedPreferences(MainActivity.MYPREFS, Context.MODE_PRIVATE);
@@ -69,7 +68,6 @@ public class MyView extends View {
 
     public MyView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        Log.d("check1", "6");
         x = this.getX();
         y = this.getY();
         prefs = context.getSharedPreferences(MainActivity.MYPREFS, Context.MODE_PRIVATE);
@@ -79,7 +77,6 @@ public class MyView extends View {
 
     public MyView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        Log.d("check1", "7");
         x = this.getX();
         y = this.getY();
         prefs = context.getSharedPreferences(MainActivity.MYPREFS, Context.MODE_PRIVATE);
@@ -165,9 +162,9 @@ public class MyView extends View {
         touchY = event.getY();
 
         switch (event.getAction()) {
-//            case MotionEvent.ACTION_UP:
+//          case MotionEvent.ACTION_DOWN:
 
-            case MotionEvent.ACTION_DOWN:
+            case MotionEvent.ACTION_UP:
                 //Check if the point press is within the circle
                 if(contains(event, points.get(pointsPos))){
                     hitCircle = "inside";
@@ -241,9 +238,9 @@ public class MyView extends View {
                     stringBuilder.delete(0, stringBuilder.length());
                 }
 
-//            case MotionEvent.ACTION_CANCEL: {
-//                break;
-//            }
+            case MotionEvent.ACTION_CANCEL: {
+                break;
+            }
 //
 //            case MotionEvent.ACTION_MOVE:
         }
