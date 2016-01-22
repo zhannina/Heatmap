@@ -99,7 +99,7 @@ public class Setup extends AppCompatActivity {
     }
 
     public void clickExit(View view) {
-        super.onDestroy(); // cleanup
+   //     super.onDestroy(); // cleanup
         this.finish(); // terminate
     }
 
