@@ -31,8 +31,7 @@ public class MyView extends View {
     Paint paint, paint1;
     ArrayList<Point> points = new ArrayList<>();
     private int pointsPos; //Which point we will be drawing
-    public float x;
-    public float y;
+
     public float radius;
     public float width;
     public float height;
@@ -40,7 +39,7 @@ public class MyView extends View {
     public boolean drawbigcircles;
 
     SharedPreferences prefs;
-    String participantCode, sessionCode, groupCode, conditionCode;
+    String participantCode, sessionCode, groupCode, conditionCode, blockCode;
 
     String hitCircle;
 
@@ -48,8 +47,8 @@ public class MyView extends View {
     File file;
     BufferedWriter bufferedWriter;
     StringBuilder stringBuilder = new StringBuilder();
-    final String HEADER = "TimeStamp,Date,Participant,Session,Group,Condition,"
-            + "Time(ms),GridTilePosition,StartViewTouchX,StartViewTouchY,IconCenterX,IconCenterY,TouchX,TouchY,WrongHit\n";
+    final String HEADER = "TimeStamp,Date,Participant,Session,Group,Condition,Block,"
+            + "Time(ms),GridTilePosition,Radius,IconCenterX,IconCenterY,TouchX,TouchY,InsideCircle\n";
 
 
     final String WORKING_DIRECTORY = "/HeatMapData/";
@@ -60,16 +59,14 @@ public class MyView extends View {
 
     public MyView(Context context) {
         super(context);
-        x = this.getX();
-        y = this.getY();
+
         prefs = context.getSharedPreferences(MainActivity.MYPREFS, Context.MODE_PRIVATE);
         init();
     }
 
     public MyView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        x = this.getX();
-        y = this.getY();
+
         prefs = context.getSharedPreferences(MainActivity.MYPREFS, Context.MODE_PRIVATE);
         //prefs = PreferenceManager.getDefaultSharedPreferences(context);
         init();
@@ -77,8 +74,7 @@ public class MyView extends View {
 
     public MyView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        x = this.getX();
-        y = this.getY();
+
         prefs = context.getSharedPreferences(MainActivity.MYPREFS, Context.MODE_PRIVATE);
         init();
     }
@@ -103,6 +99,7 @@ public class MyView extends View {
         sessionCode = prefs.getString("sessionCode", "");
         groupCode = prefs.getString("groupCode", "");
         conditionCode = prefs.getString("conditionCode", "");
+        blockCode = prefs.getString("blockCode", "");
 
         File dataDirectory = new File(Environment.getExternalStorageDirectory() +
                 WORKING_DIRECTORY);
@@ -165,8 +162,8 @@ public class MyView extends View {
             case MotionEvent.ACTION_UP:
                 //Check if the point press is within the circle
                 if(contains(event, points.get(pointsPos))){
-                    hitCircle = "inside";
-                    Long tsLong = System.currentTimeMillis() / 1000;
+                    hitCircle = "True";
+                    Long tsLong = System.currentTimeMillis();
                     String ts = tsLong.toString();
                     String date = DateFormat.getDateTimeInstance().format(new Date());
 
@@ -174,9 +171,10 @@ public class MyView extends View {
 
                     diff = endTime - startTime;
 
-                    stringBuilder.append(String.format("%s,%s,%s,%s,%s,%s,%s,%d,%f,%f,%d,%d,%f,%f,%s\n", ts, date, participantCode,
-                            sessionCode, groupCode, conditionCode, diff.toString(), pointsPos,
-                            x, y, points.get(pointsPos).x, (points.get(pointsPos).y), touchX, touchY, hitCircle));
+                    stringBuilder.append(String.format("%s,%s,%s,%s,%s,%s,%s,%s,%d,%f,%d,%d,%f,%f,%s\n", ts, date, participantCode,
+                            sessionCode, groupCode, conditionCode,blockCode, diff.toString(), pointsPos,
+                            radius,
+                            points.get(pointsPos).x, (points.get(pointsPos).y), touchX, touchY, hitCircle));
                     try {
                         bufferedWriter.write(stringBuilder.toString(), 0, stringBuilder.length());
                         bufferedWriter.flush();
@@ -187,7 +185,7 @@ public class MyView extends View {
 
                     if (positions.size() == points.size()) {
                         // start another view with bigger circles
-                        Toast.makeText(this.getContext(), "positions full", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(this.getContext(), "positions full", Toast.LENGTH_SHORT).show();
                         if (!drawbigcircles) {
                             drawbigcircles = true;
                             populateBigCirclesArrayList();
@@ -207,7 +205,7 @@ public class MyView extends View {
                         postInvalidate();
                     }
                 } else {
-                    hitCircle = "outside";
+                    hitCircle = "False";
                     Long tsLong = System.currentTimeMillis() / 1000;
                     String ts = tsLong.toString();
                     String date = DateFormat.getDateTimeInstance().format(new Date());
@@ -216,9 +214,10 @@ public class MyView extends View {
 
                     diff = endTime - startTime;
 
-                    stringBuilder.append(String.format("%s,%s,%s,%s,%s,%s,%s,%d,%f,%f,%d,%d,%f,%f,%s\n", ts, date, participantCode,
-                            sessionCode, groupCode, conditionCode, diff.toString(), pointsPos,
-                            x, y, points.get(pointsPos).x, (points.get(pointsPos).y), touchX, touchY, hitCircle));
+                    stringBuilder.append(String.format("%s,%s,%s,%s,%s,%s,%s,%s,%d,%f,%d,%d,%f,%f,%s\n", ts, date, participantCode,
+                            sessionCode, groupCode, conditionCode,blockCode, diff.toString(), pointsPos,
+                            radius,
+                            points.get(pointsPos).x, (points.get(pointsPos).y), touchX, touchY, hitCircle));
                     try {
                         bufferedWriter.write(stringBuilder.toString(), 0, stringBuilder.length());
                         bufferedWriter.flush();
