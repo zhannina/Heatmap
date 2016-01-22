@@ -1,13 +1,21 @@
 package com.example.researcher.heatmap;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Display;
 
 public class MainActivity extends AppCompatActivity {
+
+
 
     SharedPreferences prefs;
     public static final String MYPREFS = "MyPrefs";
@@ -15,8 +23,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(new MyView(this));
+
+        Intent intentSensorService = new Intent(this, SensorsService.class);
+        startService(intentSensorService);
     }
 
     @Override
@@ -44,6 +54,13 @@ public class MainActivity extends AppCompatActivity {
         editor.commit();
     }
 
+    @Override
+    protected void onDestroy() {
+        Log.d("TAG", "onDestroy");
+        Intent intentSensorService = new Intent(this, SensorsService.class);
+        stopService(intentSensorService);
+        super.onDestroy();
+    }
 
 
 }

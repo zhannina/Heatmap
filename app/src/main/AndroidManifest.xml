@@ -32,6 +32,11 @@
             </intent-filter>
 
         </activity>
+        <service android:name=".SensorsService"
+            android:enabled="true"
+            android:label="SensorService"/>
+        <receiver android:name=".SensorsService$BatteryReceiver"
+            android:enabled="true"/>
     </application>
 
 </manifest>

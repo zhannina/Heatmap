@@ -1,6 +1,7 @@
 package com.example.researcher.heatmap;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -41,6 +42,7 @@ public class MyView extends View {
     SharedPreferences prefs;
     String participantCode, sessionCode, groupCode, conditionCode, blockCode;
 
+
     String hitCircle;
 
     int counter = 0;
@@ -51,7 +53,7 @@ public class MyView extends View {
             + "Time(ms),GridTilePosition,Radius,IconCenterX,IconCenterY,TouchX,TouchY,InsideCircle\n";
 
 
-    final String WORKING_DIRECTORY = "/HeatMapData/";
+    public final static String WORKING_DIRECTORY = "/HeatMapData/";
 
     Long startTime, endTime, diff;
 
@@ -105,7 +107,7 @@ public class MyView extends View {
                 WORKING_DIRECTORY);
         if (!dataDirectory.exists() && !dataDirectory.mkdirs()) {
             Log.e("MYDEBUG", "Error creating data directory! Exception: " + WORKING_DIRECTORY);
-            System.exit(0);
+            finishActivity();
         }
 
         String base = "HeatMap-" + participantCode + "-" + sessionCode + "-" +
@@ -126,7 +128,7 @@ public class MyView extends View {
         } catch (IOException e) {
             Log.e("MYDEBUG", "Error opening data files! Exception: " + e.toString());
             Log.e("MYDEBUG", "Error opening data files! Exception: " + e.getStackTrace());
-            System.exit(0);
+            finishActivity();
         }
 
         // access time
@@ -195,7 +197,7 @@ public class MyView extends View {
                             } catch (IOException e) {
                                 Log.e("MYDEBUG", "ERROR CLOSING THE DATA FILES: e = " + e);
                             }
-                            System.exit(0);
+                            finishActivity();
                         }
                     }
                     else {
@@ -325,6 +327,14 @@ public class MyView extends View {
         Random r1 = new Random(System.nanoTime());
         pointsPos = r1.nextInt(points.size()); //between 0 and points.length
         positions.add(pointsPos);
+
+    }
+
+    private void finishActivity()
+    {
+        Intent intentSensorService = new Intent(getContext(), SensorsService.class);
+        getContext().stopService(intentSensorService);
+        System.exit(0);
 
     }
 
