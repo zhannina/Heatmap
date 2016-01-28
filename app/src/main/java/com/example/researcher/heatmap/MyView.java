@@ -12,7 +12,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Toast;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -131,9 +130,9 @@ public class MyView extends View {
             finishActivity();
         }
 
+        counter = 0;
         // access time
         startTime = System.currentTimeMillis();
-        counter = 0;
 
     }
 
@@ -159,22 +158,25 @@ public class MyView extends View {
         touchY = event.getY();
 
         switch (event.getAction()) {
-//          case MotionEvent.ACTION_DOWN:
+//            case MotionEvent.ACTION_DOWN: {
+//                break;
+//            }
 
             case MotionEvent.ACTION_UP:
                 //Check if the point press is within the circle
-                if(contains(event, points.get(pointsPos))){
+                if (contains(event, points.get(pointsPos))) {
                     hitCircle = "True";
                     Long tsLong = System.currentTimeMillis();
                     String ts = tsLong.toString();
                     String date = DateFormat.getDateTimeInstance().format(new Date());
 
-                    endTime = System.currentTimeMillis();
+                    endTime=System.currentTimeMillis();
 
-                    diff = endTime - startTime;
+                    diff = endTime-startTime;
+                    Log.d("time", ""+diff);
 
                     stringBuilder.append(String.format("%s,%s,%s,%s,%s,%s,%s,%s,%d,%f,%d,%d,%f,%f,%s\n", ts, date, participantCode,
-                            sessionCode, groupCode, conditionCode,blockCode, diff.toString(), pointsPos,
+                            sessionCode, groupCode, conditionCode, blockCode, diff.toString(), pointsPos,
                             radius,
                             points.get(pointsPos).x, (points.get(pointsPos).y), touchX, touchY, hitCircle));
                     try {
@@ -199,11 +201,11 @@ public class MyView extends View {
                             }
                             finishActivity();
                         }
-                    }
-                    else {
+                    } else {
                         Random r = new Random(System.nanoTime());
                         pointsPos = r.nextInt(points.size()); //between 0 and points.length
                         positions.add(pointsPos);
+                        startTime = System.currentTimeMillis();
                         postInvalidate();
                     }
                 } else {
@@ -212,12 +214,8 @@ public class MyView extends View {
                     String ts = tsLong.toString();
                     String date = DateFormat.getDateTimeInstance().format(new Date());
 
-                    endTime = System.currentTimeMillis();
-
-                    diff = endTime - startTime;
-
                     stringBuilder.append(String.format("%s,%s,%s,%s,%s,%s,%s,%s,%d,%f,%d,%d,%f,%f,%s\n", ts, date, participantCode,
-                            sessionCode, groupCode, conditionCode,blockCode, diff.toString(), pointsPos,
+                            sessionCode, groupCode, conditionCode, blockCode, diff.toString(), pointsPos,
                             radius,
                             points.get(pointsPos).x, (points.get(pointsPos).y), touchX, touchY, hitCircle));
                     try {
@@ -228,13 +226,16 @@ public class MyView extends View {
                     }
                     stringBuilder.delete(0, stringBuilder.length());
                 }
-
-            case MotionEvent.ACTION_CANCEL: {
-                break;
-            }
 //
-//            case MotionEvent.ACTION_MOVE:
+//            case MotionEvent.ACTION_CANCEL: {
+//                break;
+//            }
+//
+//            case MotionEvent.ACTION_MOVE:{
+//                break;
+//            }
         }
+
         postInvalidate();
         return true;
 
@@ -327,6 +328,7 @@ public class MyView extends View {
         Random r1 = new Random(System.nanoTime());
         pointsPos = r1.nextInt(points.size()); //between 0 and points.length
         positions.add(pointsPos);
+        startTime = System.currentTimeMillis();
 
     }
 
