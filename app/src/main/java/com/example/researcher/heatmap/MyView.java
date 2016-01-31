@@ -116,7 +116,7 @@ public class MyView extends View {
 
         try {
             bufferedWriter = new BufferedWriter(new FileWriter(file, true));
-            if (!prefs.getBoolean("HEADERS", false)) {
+            if (!prefs.getBoolean("HEADERS", false) && blockCode.equals("B01")) {
                 bufferedWriter.append(HEADER, 0, HEADER.length());
                 bufferedWriter.flush();
                 SharedPreferences.Editor editor = prefs.edit();
